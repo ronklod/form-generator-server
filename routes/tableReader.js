@@ -34,7 +34,8 @@ router.get('/:table', async function(req, res, next) {
     let table = req.params['table'];
     let resultObj = {
         columns: eval(table + '.columns'), //to fix
-        data: null
+        data: null,
+        f_keys: {definition: eval(table + '.f_keys'), data:[]}
     }
 
   try {
@@ -42,8 +43,18 @@ router.get('/:table', async function(req, res, next) {
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect(sqlConfig);
         result = await sql.query(eval(table+'.queries.main'));
-        console.dir(result)
         resultObj.data = result;
+        if(resultObj.f_keys && resultObj.f_keys.definition&&  resultObj.f_keys.definition.length > 0){
+            for(let i=0; i< resultObj.f_keys.definition.length;i++){
+                result = await sql.query(eval(table+'.f_keys['+ i +'].query'));
+                resultObj.f_keys.data.push({name: eval(table+'.f_keys['+ i +'].name'), value: result});
+            }
+        }
+
+
+
+        console.dir(result)
+
         res.send(JSON.stringify(resultObj));
 
     } catch (err) {
@@ -54,6 +65,10 @@ router.get('/:table', async function(req, res, next) {
 
 router.get('/physicalSchema', async function(req, res, next) {
    res.send(physical.columns);
+});
+
+router.get('/physicalSchema', async function(req, res, next) {
+    res.send(physical.columns);
 });
 
 
@@ -90,7 +105,7 @@ router.post('/:table', async function(req, res, next) {
        //result = await  sql.query(eval(table+'.queries.insert'));
 
         console.dir(result)
-        res.send(JSON.stringify(result));
+        res.status(200).send(JSON.stringify(result));
 
         // If the execution reaches this line, the transaction has been committed successfully
     } catch (error) {
@@ -148,7 +163,7 @@ router.put('/:table', async function(req, res, next) {
         result = await  sql.query(update_statement);
 
         console.dir(result)
-        res.send(JSON.stringify(result));
+        res.    status(200).send(JSON.stringify(result));
 
         // If the execution reaches this line, the transaction has been committed successfully
     } catch (error) {

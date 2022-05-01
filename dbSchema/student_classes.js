@@ -4,9 +4,9 @@ var student_classes = {
         {name:'class_id', type:'int', pk:true, fk:true, null:false, auto_generated:false},
         {name:'grade', type:'int', pk:false, fk:false, null:false,auto_generated:false},
     ],
-    fk:[
-        {name:'class_id', query:'select id from classes'},
-        {name:'student_id', query:'select id from studnts'}
+    f_keys:[
+        {name:'class_id', query:"select id,name  from classes"},
+        {name:'student_id', query:"select id, concat(first_name,' ', last_name) as name from student"}
     ],
     queries: {
         main: "select concat(student_id , '-', class_id) as 'key', * from student_classes",

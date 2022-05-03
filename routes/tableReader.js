@@ -123,6 +123,7 @@ router.put('/:table', async function(req, res, next) {
 
     let table = req.params['table'];
     const formData = JSON.parse(req.body.tableData);
+    const originalValues = JSON.parse(req.body.originalValues);
     const key = req.body.key;
 
     try {
@@ -135,17 +136,8 @@ router.put('/:table', async function(req, res, next) {
         for(let i=0; i<formData.length;i++){
             //building the columns & values for th einsert statement
             let columnDefinition = formData[i].columnDefinition;
-            if(columnDefinition == null)
+            if(columnDefinition == null || columnDefinition.auto_generated)
                 continue;
-
-            if(columnDefinition.pk) {
-                let and = " and ";
-                if(where == "")
-                    where = formData[i].name + "=" +formData[i].value;
-                else
-                    where += and +  formData[i].name + "=" +formData[i].value;
-                continue;
-            }
 
             if(columnDefinition.type.indexOf("varchar") >=0) {
                 value = "'" + formData[i].value + "'";
@@ -158,7 +150,7 @@ router.put('/:table', async function(req, res, next) {
         }
 
         columns = columns.substr(0, columns.length-1);
-        let update_statement = "update " + table + " set " + columns + " where " +where;
+        let update_statement = "update " + table + " set " + columns + " where " + getWhereCluase(originalValues,formData);
 
         result = await  sql.query(update_statement);
 
@@ -173,5 +165,31 @@ router.put('/:table', async function(req, res, next) {
         // The transaction has already been rolled back automatically by Sequelize!
     }
 });
+
+const getWhereCluase = (originalValues, currentValues) =>{
+    let whereCluase = "";
+    let value = "";
+    let and = " and ";
+    for (let i=0; i<currentValues.length;i++){
+        if(currentValues[i].columnDefinition && currentValues[i].columnDefinition.pk == true){
+
+            if(currentValues[i].columnDefinition.type.indexOf("varchar") >=0) {
+                value = "'" + originalValues[currentValues[i].name] + "'";
+            }
+            else{
+                value = originalValues[currentValues[i].name];
+            }
+
+            if(whereCluase == "") {
+                whereCluase = currentValues[i].name + "=" + value;
+            }
+            else{
+                whereCluase += and + currentValues[i].name + "=" + value;
+            }
+        }
+    }
+
+    return whereCluase;
+}
 
 module.exports = router;

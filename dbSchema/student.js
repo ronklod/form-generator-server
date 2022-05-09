@@ -1,11 +1,11 @@
 var student = {
     columns: [
-        {name:'id', type:'bigint', pk:true, fk:false,null:false, auto_generated:true},
-        {name:'first_name', type:'varchar(255)', pk:false, fk:false, null:false, auto_generated:false},
-        {name:'last_name', type:'varchar(255)', pk:false, fk:false, null:false, auto_generated:false},
-        {name:'email', type:'varchar(255)', pk:false, fk:false, null:false, auto_generated:false},
-        {name:'age', type:'smallint', pk:false, fk:false, null: false, auto_generated:false},
-        {name:'gender', type:'varchar(255)', pk:false, fk:false, null:true, auto_generated:false},
+        {name:'id', type:'bigint', pk:true, fk:false,nullable:false, auto_generated:true},
+        {name:'first_name', type:'varchar(255)', pk:false, fk:false, nullable:false, auto_generated:false},
+        {name:'last_name', type:'varchar(255)', pk:false, fk:false, nullable:false, auto_generated:false},
+        {name:'email', type:'varchar(255)', pk:false, fk:false, nullable:false, auto_generated:false},
+        {name:'age', type:'smallint', pk:false, fk:false, nullable: true, auto_generated:false},
+        {name:'gender', type:'varchar(255)', pk:false, fk:false, nullable:true, auto_generated:false},
     ],
     queries: {
         main: "select id as 'key', * from dbo.student",

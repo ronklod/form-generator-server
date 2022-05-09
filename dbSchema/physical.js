@@ -1,10 +1,10 @@
 var physical = {
     columns: [
-        {name:'id', type:'bigint', pk:true, fk:false,null:false},
-        {name:'name', type:'varchar(100)', pk:false, fk:false, null:true},
-        {name:'lane', type:'smallint', pk:false, fk:false, null: true},
-        {name:'stage_id', type:'int', pk:false, fk:true, null:false},
-        {name:'is_global', type:'bit', pk:false, fk:false, null:false}
+        {name:'id', type:'bigint', pk:true, fk:false,nullable:false},
+        {name:'name', type:'varchar(100)', pk:false, fk:false, nullable:true},
+        {name:'lane', type:'smallint', pk:false, fk:false, nullable: true},
+        {name:'stage_id', type:'int', pk:false, fk:true, nullable:false},
+        {name:'is_global', type:'bit', pk:false, fk:false, nullable:false}
     ],
     queries: {
         main: "select id as 'key', * from factory.physical",

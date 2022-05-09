@@ -1,9 +1,9 @@
 var classes = {
     columns: [
-        {name:'id', type:'bigint', pk:true, fk:false,null:false, auto_generated:true},
-        {name:'name', type:'varchar(255)', pk:false, fk:false, null:false,auto_generated:false},
-        {name:'content', type:'varchar(255)', pk:false, fk:false, null:false,auto_generated:false},
-        {name:'lecture', type:'varchar(255)', pk:false, fk:false, null:false,auto_generated:false},
+        {name:'id', type:'bigint', pk:true, fk:false,nullable:false, auto_generated:true},
+        {name:'name', type:'varchar(255)', pk:false, fk:false, nullable:false,auto_generated:false},
+        {name:'content', type:'varchar(255)', pk:false, fk:false, nullable:true,auto_generated:false},
+        {name:'lecture', type:'varchar(255)', pk:false, fk:false, nullable:false,auto_generated:false},
 
     ],
     queries: {

@@ -31,15 +31,17 @@ const sqlConfig = {
 /* get table data. */
 router.get('/:table', async function(req, res, next) {
 
-    let table = req.params['table'];
-    let resultObj = {
-        columns: eval(table + '.columns'), //to fix
-        data: null,
-        f_keys: {definition: eval(table + '.f_keys'), data:[]}
-    }
+
 
   try {
-        let result = null;
+      let table = req.params['table'];
+      let resultObj = {
+          columns: eval(table + '.columns'), //to fix
+          data: null,
+          f_keys: {definition: eval(table + '.f_keys'), data:[]}
+      }
+
+      let result = null;
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect(sqlConfig);
         result = await sql.query(eval(table+'.queries.main'));
@@ -75,10 +77,10 @@ router.get('/physicalSchema', async function(req, res, next) {
 /* save a new item in the DB. */
 router.post('/:table', async function(req, res, next) {
 
-    let table = req.params['table'];
-    const formData = JSON.parse(req.body.tableData);
-
     try {
+
+        let table = req.params['table'];
+        const formData = JSON.parse(req.body.tableData);
         let result = null;
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect(sqlConfig);
@@ -121,12 +123,13 @@ router.post('/:table', async function(req, res, next) {
 /* save a new item in the DB. */
 router.put('/:table', async function(req, res, next) {
 
-    let table = req.params['table'];
-    const formData = JSON.parse(req.body.tableData);
-    const originalValues = JSON.parse(req.body.originalValues);
-    const key = req.body.key;
-
     try {
+
+        let table = req.params['table'];
+        const formData = JSON.parse(req.body.tableData);
+        const originalValues = JSON.parse(req.body.originalValues);
+        const key = req.body.key;
+
         let result = null;
         // make sure that any items are correctly URL encoded in the connection string
         await sql.connect(sqlConfig);

@@ -1,8 +1,8 @@
 var student_classes = {
     columns: [
-        {name:'student_id', type:'int', pk:true, fk:true,null:false,auto_generated:false},
-        {name:'class_id', type:'int', pk:true, fk:true, null:false, auto_generated:false},
-        {name:'grade', type:'int', pk:false, fk:false, null:false,auto_generated:false},
+        {name:'student_id', type:'int', pk:true, fk:true,nullable:false,auto_generated:false},
+        {name:'class_id', type:'int', pk:true, fk:true, nullable:false, auto_generated:false},
+        {name:'grade', type:'int', pk:false, fk:false, nullable:false,auto_generated:false},
     ],
     f_keys:[
         {name:'class_id', query:"select id,name  from classes"},

@@ -88,7 +88,7 @@ router.post('/:table', async function(req, res, next) {
         let values = "";
         for(let k in formData){
             //building the columns & values for th einsert statement
-            let columnDefinition = JSON.parse(formData[k].columnDefinition);
+            let columnDefinition = formData[k].columnDefinition;
             columns += formData[k].name + ","
             if(columnDefinition.type.indexOf("varchar") >=0) {
                 values += "'" + formData[k].value + "',";
@@ -102,9 +102,7 @@ router.post('/:table', async function(req, res, next) {
         values =  values.substr(0, values.length-1);
 
         let insert_statement = "insert into " + table + "("  + columns + ") values (" +values + ")";
-
         result = await  sql.query(insert_statement);
-       //result = await  sql.query(eval(table+'.queries.insert'));
 
         console.dir(result)
         res.status(200).send(JSON.stringify(result));

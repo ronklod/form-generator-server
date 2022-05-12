@@ -7,15 +7,9 @@ var cors = require('cors');
 var bodyParser = require('body-parser');
 var multer = require('multer');
 var forms = multer();
-//var indexRouter = require('./routes/index');
-//var usersRouter = require('./routes/users');
-var usersRouter = require('./routes/tableReader');
+var tableRouter = require('./routes/tableReader');
 
 var app = express();
-
-// view engine setup
-//app.set('views', path.join(__dirname, 'views'));
-//app.set('view engine', 'pug');
 app.use(bodyParser.json());
 app.use(forms.array());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -25,10 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
- //app.use('/', indexRouter);
-//app.use('/users', usersRouter);
-app.use('/table/', usersRouter);
+app.use('/table/', tableRouter);
 
 
 // catch 404 and forward to error handler

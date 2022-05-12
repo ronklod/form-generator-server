@@ -30,9 +30,6 @@ const sqlConfig = {
 
 /* get table data. */
 router.get('/:table', async function(req, res, next) {
-
-
-
   try {
       let table = req.params['table'];
       let resultObj = {
@@ -52,13 +49,8 @@ router.get('/:table', async function(req, res, next) {
                 resultObj.f_keys.data.push({name: eval(table+'.f_keys['+ i +'].name'), value: result});
             }
         }
-
-
-
-        console.dir(result)
-
+        //console.dir(result)
         res.send(JSON.stringify(resultObj));
-
     } catch (err) {
       console.log(err)
     }
@@ -73,19 +65,15 @@ router.get('/physicalSchema', async function(req, res, next) {
     res.send(physical.columns);
 });
 
-
 /* save a new item in the DB. */
 router.post('/:table', async function(req, res, next) {
-
     try {
-
         let table = req.params['table'];
         const formData = JSON.parse(req.body.tableData);
         let result = null;
-        // make sure that any items are correctly URL encoded in the connection string
-        await sql.connect(sqlConfig);
         let columns = "";
         let values = "";
+
         for(let k in formData){
             //building the columns & values for th einsert statement
             let columnDefinition = formData[k].columnDefinition;
@@ -101,39 +89,31 @@ router.post('/:table', async function(req, res, next) {
         columns = columns.substr(0, columns.length-1);
         values =  values.substr(0, values.length-1);
 
+        // make sure that any items are correctly URL encoded in the connection string
+        await sql.connect(sqlConfig);
         let insert_statement = "insert into " + table + "("  + columns + ") values (" +values + ")";
         result = await  sql.query(insert_statement);
 
         console.dir(result)
         res.status(200).send(JSON.stringify(result));
 
-        // If the execution reaches this line, the transaction has been committed successfully
     } catch (error) {
         console.log(error)
         res.status(500).send(error.message);
-        // If the execution reaches this line, an error occurred.
-        // The transaction has already been rolled back automatically by Sequelize!
     }
 });
 
-
-
 /* save a new item in the DB. */
 router.put('/:table', async function(req, res, next) {
-
     try {
-
         let table = req.params['table'];
         const formData = JSON.parse(req.body.tableData);
         const originalValues = JSON.parse(req.body.originalValues);
         const key = req.body.key;
-
         let result = null;
-        // make sure that any items are correctly URL encoded in the connection string
-        await sql.connect(sqlConfig);
         let columns = "";
         let value = "";
-        let where = "";
+
         for(let i=0; i<formData.length;i++){
             //building the columns & values for th einsert statement
             let columnDefinition = formData[i].columnDefinition;
@@ -144,36 +124,78 @@ router.put('/:table', async function(req, res, next) {
                 value = "'" + formData[i].value + "'";
             }
             else{
-                value = formData[i].value ;
+                value = formData[i].value;
             }
 
             columns += formData[i].name + "=" +  value + ",";
         }
 
         columns = columns.substr(0, columns.length-1);
-        let update_statement = "update " + table + " set " + columns + " where " + getWhereCluase(originalValues,formData);
 
+        // make sure that any items are correctly URL encoded in the connection string
+        await sql.connect(sqlConfig);
+        let update_statement = "update " + table + " set " + columns + " where " + getUpdateWhereClause(originalValues,formData);
         result = await  sql.query(update_statement);
 
-        console.dir(result)
-        res.    status(200).send(JSON.stringify(result));
+        //console.dir(result)
+        res.status(200).send(JSON.stringify(result));
 
-        // If the execution reaches this line, the transaction has been committed successfully
     } catch (error) {
         console.log(error)
         res.status(500).send(error.message);
-        // If the execution reaches this line, an error occurred.
-        // The transaction has already been rolled back automatically by Sequelize!
     }
 });
 
-const getWhereCluase = (originalValues, currentValues) =>{
+/* save a new item in the DB. */
+router.delete('/:table', async function(req, res, next) {
+    try {
+        let table = req.params['table'];
+        const rawData = JSON.parse(req.body.rawData);
+        const colDef = JSON.parse(req.body.colDef);
+        let result = null;
+        let whereClause = ""
+        let and = " and ";
+
+        for(let k in colDef){
+            let value = "";
+
+            if(colDef[k].pk){
+                if(colDef[k].type.indexOf("varchar") >= 0){
+                     value = "'" + rawData[colDef[k].name] + "'" ;
+                }else{
+                    value +=  rawData[colDef[k].name];
+                }
+
+                if(whereClause == ""){
+                    whereClause = " " + colDef[k].name + "=" + value;
+                }
+                else{
+                    whereClause += and + colDef[k].name + "=" + value;
+                }
+            }
+        }
+
+        await sql.connect(sqlConfig);
+        let delete_statement = "delete from " + table + " where " + whereClause;
+        result = await  sql.query(delete_statement);
+        res.status(200).send(JSON.stringify(result));
+    } catch (error) {
+        console.log(error)
+        if(error.message.toLowerCase().indexOf("reference")>=0){
+            res.status(500).send(error.message);
+        }
+        else {
+            res.status(500).send(error.message);
+        }
+    }
+});
+
+const getUpdateWhereClause = (originalValues, currentValues) =>{
     let whereCluase = "";
     let value = "";
     let and = " and ";
     for (let i=0; i<currentValues.length;i++){
         if(currentValues[i].columnDefinition && currentValues[i].columnDefinition.pk == true){
-
             if(currentValues[i].columnDefinition.type.indexOf("varchar") >=0) {
                 value = "'" + originalValues[currentValues[i].name] + "'";
             }
@@ -189,7 +211,6 @@ const getWhereCluase = (originalValues, currentValues) =>{
             }
         }
     }
-
     return whereCluase;
 }
 
